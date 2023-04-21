@@ -1,7 +1,14 @@
+
+'''
+these python code doesnt work just by running it
+follow these steps to add or delete the data
+
+populate:
+1.select all the data 
+
 import pandas as pd
 from data_table.models import Alumni
 import math
-
 # Read data from Excel sheet
 df = pd.read_excel('C:\\Users\\Hp\\Desktop\\Newp1\\importapp\\fad.xlsx')
 
@@ -25,8 +32,12 @@ for index, row in df.iterrows():
         willing_contribution=row['willing_contribution']
     )
     alumni.save()
-    '''
-#deleting all the records
+
+
+2.deleting all the records:
+
+from data_table.models import Alumni
 Alumni.objects.all().delete()
+
 '''
     
