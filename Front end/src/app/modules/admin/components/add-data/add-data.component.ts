@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import {Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -7,49 +8,36 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './add-data.component.html',
   styleUrls: ['./add-data.component.css']
 })
-export class AddDataComponent {
-  fileselected = false;
+export class AddDataComponent implements OnInit {
+  addForm!: FormGroup;
+  formData: any = {};
+  constructor(private formBuilder: FormBuilder, private http: HttpClient) { }
 
-  constructor(private http: HttpClient, private router:Router) {}
-
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      const filesTypes = ['text/csv', 'application/vnd.ms-excel'];
-      if (!filesTypes.includes(file.type)) {
-        alert('Invalid file type. Please select a CSV file.');
-        event.target.value = null;
-        this.fileselected = false; // reset the fileselected state
-        return;
-      }
-      this.uploadFile(file);
-      this.fileselected = true;
-    }
+  ngOnInit(): void {
+    this.addForm = this.formBuilder.group({
+      usn: ['', Validators.required],
+      name: ['', Validators.required],
+      batch: ['', Validators.required],
+      company: ['', Validators.required],
+      address: ['', Validators.required],
+      PROEmail: ['', Validators.required],
+      OFFEmail: ['', Validators.required],
+      contact_no: ['', Validators.required],
+      designation: ['', Validators.required],
+      domain: ['', Validators.required],
+      willing_contribution: ['', Validators.required]
+    });
   }
 
-  uploadFile(file: File) {
-    const allowedTypes = ['text/csv', 'application/vnd.ms-excel'];
-    if (!allowedTypes.includes(file.type)) {
-      console.error('Invalid file type. Please select a CSV file.');
-      return;
+  onSubmit() {
+    alert('hia sanju');
+    if (this.addForm.valid) {
+      this.formData = this.addForm.value; // Assign form data to formData object
+      console.log(this.formData);
+      this.http.post('http://127.0.0.1:8000/alumni/', this.formData).subscribe(response => {
+        // Handle response from backend
+      });
     }
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-
-    const uploadUrl = 'https://example.com/upload'; // it is the url of the data base
-    this.http.post(uploadUrl, formData).subscribe(
-      (response: any) => {
-        console.log('File uploaded successfully');
-      },
-      (error: any) => {
-        console.error('Error uploading file', error);
-      }
-    );
-  }
-
-  onNext() {
-    alert('File uploaded successfully');
-    this.router.navigate(['/admin/home'])
-    // Add additional logic here, such as routing to a new page or performing other actions
+    this.addForm.reset();
   }
 }
